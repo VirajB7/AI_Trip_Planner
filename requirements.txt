@@ -1,19 +1,20 @@
+# Core dependencies
 streamlit>=1.28.0
-langchain-google-genai>=0.0.11
-langchain
-langgraph>=0.0.40
-langsmith>=0.0.74
 python-dotenv>=1.0.0
 requests>=2.31.0
-duckduckgo-search>=3.9.6
 pydantic>=2.4.2
+fpdf>=1.7.2
+
+# LangChain & related tools
+langchain>=0.3.27
+langchain-google-genai>=0.0.11
+langchain-community>=0.3.31
+langchain-core>=0.3.79
+langgraph>=0.0.40
+langsmith>=0.0.74
 google-generativeai>=0.3.0
-ddgs
-geocoder
-fpdf
-langchain-community
-langchain-core
-dotenv
-datetime
-requests
-locale
+
+# Search / geocoding utilities
+duckduckgo-search>=3.9.6
+ddgs>=9.6.1
+geocoder>=1.38.1
