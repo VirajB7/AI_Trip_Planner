@@ -1,5 +1,6 @@
 streamlit>=1.28.0
 langchain-google-genai>=0.0.11
+langchain
 langgraph>=0.0.40
 langsmith>=0.0.74
 python-dotenv>=1.0.0
