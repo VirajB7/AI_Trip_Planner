@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 import platform
 from langsmith import traceable
 from langchain_core.tracers.context import tracing_v2_enabled
+import re
 
 # Import LangGraph
 from langgraph.graph import StateGraph, END
@@ -516,25 +517,50 @@ if generate_btn:
                 
                 # Display results
                 st.success("✅ Complete travel plan generated successfully!")
-                
-                # Show workflow steps
-                st.subheader("📊 Workflow Execution Steps")
-                steps = [
-                    ("🌤️ Weather Check", final_state.get("weather_validated", False)),
-                    ("📅 Itinerary Generation", final_state.get("itinerary_generated", False)),
-                    ("💰 Cost Calculation", final_state.get("cost_result") is not None)
-                ]
-                
-                for step_name, completed in steps:
-                    status = "✅ Completed" if completed else "❌ Failed"
-                    st.write(f"{step_name}: {status}")
-                
+                                
                 # Display itinerary
+                # Display itinerary - Simple bullet point version
                 if final_state.get("itinerary_generated"):
                     st.divider()
                     st.header("🗓️ Generated Itinerary")
-                    st.text_area("Full Itinerary", final_state["full_itinerary"], height=300)
                     
+                    full_itinerary = final_state["full_itinerary"]
+                    
+                    # Split by "Day X" pattern
+                    import re
+                    day_pattern = r'(Day \d+.*?)(?=Day \d+|$)'
+                    day_matches = re.findall(day_pattern, full_itinerary, re.DOTALL | re.IGNORECASE)
+                    
+                    if not day_matches:
+                        # If regex doesn't work, fall back to simple splitting
+                        day_sections = full_itinerary.split('\n\n')
+                    else:
+                        day_sections = day_matches
+                    
+                    for i, day_section in enumerate(day_sections):
+                        if not day_section.strip():
+                            continue
+                            
+                        # Extract day number and content
+                        lines = [line.strip() for line in day_section.split('\n') if line.strip()]
+                        
+                        if not lines:
+                            continue
+                            
+                        # First line is usually the day header
+                        day_header = lines[0]
+                        activities = lines[1:] if len(lines) > 1 else []
+                        
+                        st.subheader(f"📌 {day_header}")
+                        
+                        if activities:
+                            for activity in activities:
+                                st.markdown(f"• {activity}")
+                        else:
+                            st.info("No specific activities planned for this day.")
+                        
+                        st.markdown("---")
+
                     # Generate PDF
                     try:
                         pdf_filename = save_itinerary_as_pdf(final_state["full_itinerary"])
@@ -593,6 +619,18 @@ if generate_btn:
                     
             except Exception as e:
                 st.error(f"❌ LangGraph workflow execution failed: {str(e)}")
+            
+            # Show workflow steps
+            st.subheader("📊 Workflow Execution Steps")
+            steps = [
+                ("🌤️ Weather Check", final_state.get("weather_validated", False)),
+                ("📅 Itinerary Generation", final_state.get("itinerary_generated", False)),
+                ("💰 Cost Calculation", final_state.get("cost_result") is not None)
+            ]
+            
+            for step_name, completed in steps:
+                status = "✅ Completed" if completed else "❌ Failed"
+                st.write(f"{step_name}: {status}")
 
 # -----------------------------
 # 8️⃣ LangGraph Visualization
