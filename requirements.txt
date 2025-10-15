@@ -11,3 +11,9 @@ google-generativeai>=0.3.0
 ddgs
 geocoder
 fpdf
+langchain_community
+langchain_core
+dotenv
+datetime
+requests
+locale
